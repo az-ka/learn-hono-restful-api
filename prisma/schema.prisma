@@ -14,7 +14,7 @@ model User {
   username String @id @unique
   password String
   name String
-  token String
+  token String?
 
   contacts Contact[]
   
