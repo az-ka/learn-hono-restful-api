@@ -1,11 +1,11 @@
-import {describe, it, expect, afterEach} from 'bun:test'
+import {describe, it, expect, afterEach, beforeEach} from 'bun:test'
 import app from '../src'
 import { logger } from '../src/application/logging'
-import { userTest } from './test-util'
+import { UserTest } from './test-util'
 
 describe('POST /api/users', () => {
     afterEach(async () => {
-        await userTest.delete()
+        await UserTest.delete()
     })
 
     it('should reject register new user if request is invalid', async () => {
@@ -26,7 +26,7 @@ describe('POST /api/users', () => {
     })
 
     it('should reject register new user if username is already taken', async () => {
-        await userTest.create()
+        await UserTest.create()
 
         const response = await app.request('/api/users', {
             method: 'POST',
@@ -63,4 +63,60 @@ describe('POST /api/users', () => {
         expect(body.data.username).toBe("testuser")
         expect(body.data.name).toBe("Test User")
     })
+})
+
+describe('POST /api/users/login', () => {
+
+    beforeEach(async () => {
+        await UserTest.create()
+    })
+
+    afterEach(async () => {
+        await UserTest.delete()
+    })
+
+    it('should be able to login', async () => {
+        const response = await app.request('/api/users/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                username: "testuser",
+                password: "testpassword123"
+            })
+        });
+
+        expect(response.status).toBe(200);
+
+        const body = await response.json();
+        expect(body.data.token).toBeDefined();
+    });
+
+    it('should be rejected if username is wrong', async () => {
+        const response = await app.request('/api/users/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                username: "testuserwrong",
+                password: "testpassword123"
+            })
+        });
+
+        expect(response.status).toBe(401);
+
+        const body = await response.json();
+        expect(body.errors).toBeDefined();
+    });
+
+    it('should be rejected if password is wrong', async () => {
+        const response = await app.request('/api/users/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                username: "testuser",
+                password: "testpassword123wrong"
+            })
+        });
+
+        expect(response.status).toBe(401);
+
+        const body = await response.json();
+        expect(body.errors).toBeDefined();
+    });
 })

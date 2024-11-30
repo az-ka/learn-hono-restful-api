@@ -1,6 +1,6 @@
 import { prismaClient } from "../src/application/database";
 
-export class userTest {
+export class UserTest {
 
     static async create() {
         await prismaClient.user.create({
@@ -13,7 +13,7 @@ export class userTest {
                 }),
                 token: "test"
             }
-        })
+        });
     }
 
     static async delete() {
@@ -21,6 +21,6 @@ export class userTest {
             where: {
                 username: "testuser"
             }
-        })
+        });
     }
 }
