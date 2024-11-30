@@ -1,71 +1,80 @@
 import { prismaClient } from "../application/database";
-import { LoginUserRequest, RegisterUserRequest, toUserResponse, UserResponse } from "../model/user-model";
+import {
+  LoginUserRequest,
+  RegisterUserRequest,
+  toUserResponse,
+  UserResponse,
+} from "../model/user-model";
 import { userValidation } from "../validation/user-validation";
 import { HTTPException } from "hono/http-exception";
 
 export class UserService {
-    static async register(request: RegisterUserRequest): Promise<UserResponse> {
-       request = userValidation.REGISTER.parse(request);
-    
-       const totalUserWithSameUsername = await prismaClient.user.count({
-            where: {
-                username: request.username
-            }
-       });
+  static async register(request: RegisterUserRequest): Promise<UserResponse> {
+    request = userValidation.REGISTER.parse(request);
 
-       if (totalUserWithSameUsername !== 0) {
-           throw new HTTPException(400, {
-                message: 'Username already taken'
-           });
-       }
+    const totalUserWithSameUsername = await prismaClient.user.count({
+      where: {
+        username: request.username,
+      },
+    });
 
-       request.password = await Bun.password.hash(request.password, {
-        algorithm: 'bcrypt',
-        cost: 10
-       });
-
-       const user = await prismaClient.user.create({
-        data: request
-       })
-
-       return toUserResponse(user);
+    if (totalUserWithSameUsername !== 0) {
+      throw new HTTPException(400, {
+        message: "Username already taken",
+      });
     }
 
-    static async login(request:LoginUserRequest): Promise<UserResponse> {
-        request = userValidation.LOGIN.parse(request);
+    request.password = await Bun.password.hash(request.password, {
+      algorithm: "bcrypt",
+      cost: 10,
+    });
 
-        let user = await prismaClient.user.findUnique({
-            where: {
-                username: request.username
-            }
-        });
+    const user = await prismaClient.user.create({
+      data: request,
+    });
 
-        if (!user) {
-            throw new HTTPException(401, {
-                message: 'Invalid username or password'
-            });
-        }
+    return toUserResponse(user);
+  }
 
-        const passwordMatch = await Bun.password.verify(request.password, user.password, 'bcrypt');
+  static async login(request: LoginUserRequest): Promise<UserResponse> {
+    request = userValidation.LOGIN.parse(request);
 
-        if (!passwordMatch) {
-            throw new HTTPException(401, {
-                message: 'Invalid username or password'
-            });
-        }
+    let user = await prismaClient.user.findUnique({
+      where: {
+        username: request.username,
+      },
+    });
 
-        user = await prismaClient.user.update({
-            where: {
-                username: request.username
-            },
-            data: {
-                token: crypto.randomUUID()
-            }
-        })
-
-        const response = toUserResponse(user);
-        response.token = user.token!;
-
-        return response;
+    if (!user) {
+      throw new HTTPException(401, {
+        message: "Invalid username or password",
+      });
     }
+
+    const passwordMatch = await Bun.password.verify(
+      request.password,
+      user.password,
+      "bcrypt",
+    );
+
+    if (!passwordMatch) {
+      throw new HTTPException(401, {
+        message: "Invalid username or password",
+      });
+    }
+
+    user = await prismaClient.user.update({
+      where: {
+        username: request.username,
+      },
+      data: {
+        token: crypto.randomUUID(),
+      },
+    });
+
+    const response = toUserResponse(user);
+    response.token = user.token!;
+
+    return response;
+  }
 }

@@ -5,17 +5,18 @@
 Endpoint : POST /api/contacts/{idContact}/addresses
 
 Request Header :
+
 - Authoriztion : token
 
 Request Body :
 
 ```json
 {
-    "street" : "jalan",
-    "city" : "kota",
-    "province" : "provinsi",
-    "country" : "negara",
-    "postal_code" : "12345"
+  "street": "jalan",
+  "city": "kota",
+  "province": "provinsi",
+  "country": "negara",
+  "postal_code": "12345"
 }
 ```
 
@@ -23,14 +24,14 @@ Response Body :
 
 ```json
 {
-    "data" : {
-        "id" : 1,
-        "street" : "jalan",
-        "city" : "kota",
-        "province" : "provinsi",
-        "country" : "negara",
-        "postal_code" : "12345"
-    }
+  "data": {
+    "id": 1,
+    "street": "jalan",
+    "city": "kota",
+    "province": "provinsi",
+    "country": "negara",
+    "postal_code": "12345"
+  }
 }
 ```
 
@@ -39,20 +40,21 @@ Response Body :
 Endpoint : GET /api/contacts/{idContact}/addresses/{idAddress}
 
 Request Header :
+
 - Authoriztion : token
 
 Response Body :
 
 ```json
 {
-    "data" : {
-        "id" : 1,
-        "street" : "jalan",
-        "city" : "kota",
-        "province" : "provinsi",
-        "country" : "negara",
-        "postal_code" : "12345"
-    }
+  "data": {
+    "id": 1,
+    "street": "jalan",
+    "city": "kota",
+    "province": "provinsi",
+    "country": "negara",
+    "postal_code": "12345"
+  }
 }
 ```
 
@@ -61,33 +63,33 @@ Response Body :
 Endpoint : PUT /api/contacts/{idContact}/addresses/{idAddress}
 
 Request Header :
+
 - Authoriztion : token
 
 Request Body :
 
 ```json
 {
-    "street" : "jalan",
-    "city" : "kota",
-    "province" : "provinsi",
-    "country" : "negara",
-    "postal_code" : "12345"
+  "street": "jalan",
+  "city": "kota",
+  "province": "provinsi",
+  "country": "negara",
+  "postal_code": "12345"
 }
 ```
-
 
 Response Body :
 
 ```json
 {
-    "data" : {
-        "id" : 1,
-        "street" : "jalan",
-        "city" : "kota",
-        "province" : "provinsi",
-        "country" : "negara",
-        "postal_code" : "12345"
-    }
+  "data": {
+    "id": 1,
+    "street": "jalan",
+    "city": "kota",
+    "province": "provinsi",
+    "country": "negara",
+    "postal_code": "12345"
+  }
 }
 ```
 
@@ -96,13 +98,14 @@ Response Body :
 Endpoint : DELETE /api/contacts/{idContact}/addresses/{idAddress}
 
 Request Header :
+
 - Authoriztion : token
 
 Response Body :
 
 ```json
 {
-    "data" : true
+  "data": true
 }
 ```
 
@@ -111,9 +114,11 @@ Response Body :
 Endpoint : POST /api/contacts/{idContact}/addresses
 
 Request Header :
+
 - Authoriztion : token
 
 Response Body :
+
 ```json
 {
     "data" : [

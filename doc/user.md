@@ -8,28 +8,28 @@ Request Body :
 
 ```json
 {
-    "username" : "azka",
-    "password" : "password",
-    "name" : "Azka"
+  "username": "azka",
+  "password": "password",
+  "name": "Azka"
 }
 ```
 
-Response Body (Success) : 
+Response Body (Success) :
 
 ```json
 {
-    "data" : {
-        "username" : "azka",
-        "name" : "Azka"
-    }
+  "data": {
+    "username": "azka",
+    "name": "Azka"
+  }
 }
 ```
 
-Response Body (Failed) : 
+Response Body (Failed) :
 
 ```json
 {
-    "error" : "Username must not blank,..."
+  "error": "Username must not blank,..."
 }
 ```
 
@@ -41,28 +41,28 @@ Request Body :
 
 ```json
 {
-    "username" : "azka",
-    "password" : "password"
+  "username": "azka",
+  "password": "password"
 }
 ```
 
-Response Body (Success) : 
+Response Body (Success) :
 
 ```json
 {
-    "data" : {
-        "username" : "azka",
-        "name" : "Azka",
-        "token" : "token"
-    }
+  "data": {
+    "username": "azka",
+    "name": "Azka",
+    "token": "token"
+  }
 }
 ```
 
-Response Body (Failed) : 
+Response Body (Failed) :
 
 ```json
 {
-    "error" : "Username must not blank,..."
+  "error": "Username must not blank,..."
 }
 ```
 
@@ -71,16 +71,17 @@ Response Body (Failed) :
 Endpoint : GET /api/users/current
 
 Request Header :
+
 - Authorization : token
 
-Response Body (Success) : 
+Response Body (Success) :
 
 ```json
 {
-    "data" : {
-        "username" : "azka",
-        "name" : "Azka",
-    }
+  "data": {
+    "username": "azka",
+    "name": "Azka"
+  }
 }
 ```
 
@@ -88,23 +89,23 @@ Response Body (Success) :
 
 Endpoint : PATCH /api/users/current
 
-Request Body : 
+Request Body :
 
 ```json
 {
-    "name" : "Kalo mau update name",
-    "password" : "Kalo mau update password"
+  "name": "Kalo mau update name",
+  "password": "Kalo mau update password"
 }
 ```
 
-Response Body (Success) : 
+Response Body (Success) :
 
 ```json
 {
-    "data" : {
-        "username" : "azka",
-        "name" : "Azka",
-    }
+  "data": {
+    "username": "azka",
+    "name": "Azka"
+  }
 }
 ```
 
@@ -113,12 +114,13 @@ Response Body (Success) :
 Endpoint : DELETE /api/users/current
 
 Request Header :
+
 - Authorization : token
 
-Response Body (Success) : 
+Response Body (Success) :
 
 ```json
 {
-    "data" : true
+  "data": true
 }
 ```

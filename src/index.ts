@@ -1,33 +1,33 @@
-import { Hono } from 'hono'
-import { userController } from './controller/user-controller'
-import { HTTPException } from 'hono/http-exception'
-import { ZodError } from 'zod'
+import { Hono } from "hono";
+import { userController } from "./controller/user-controller";
+import { HTTPException } from "hono/http-exception";
+import { ZodError } from "zod";
 
-const app = new Hono()
+const app = new Hono();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+app.get("/", (c) => {
+  return c.text("Hello Hono!");
+});
 
-app.route('/', userController)
+app.route("/", userController);
 
-app.onError(async (err,c) => {
+app.onError(async (err, c) => {
   if (err instanceof HTTPException) {
-    c.status(err.status)
+    c.status(err.status);
     return c.json({
-      errors: err.message
-    })
+      errors: err.message,
+    });
   } else if (err instanceof ZodError) {
-    c.status(400)
+    c.status(400);
     return c.json({
-      errors: err.message
-    })
+      errors: err.message,
+    });
   } else {
-    c.status(500)
+    c.status(500);
     return c.json({
-      errors: err.message
-    })
+      errors: err.message,
+    });
   }
-})
+});
 
-export default app
+export default app;
