@@ -58,3 +58,13 @@ userController.patch("api/users/current", async (c) => {
     data: response,
   });
 });
+
+userController.delete("api/users/current", async (c) => {
+  const user = c.get("user") as User;
+
+  const response = await UserService.logout(user);
+
+  return c.json({
+    data: response,
+  });
+});
