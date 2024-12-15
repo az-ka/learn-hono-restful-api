@@ -4,12 +4,12 @@ import app from "../src";
 
 describe("POST /api/contacts", () => {
   beforeEach(async () => {
-    await ContactTest.delete();
+    await ContactTest.deleteAll();
     await UserTest.create();
   });
 
   afterEach(async () => {
-    await ContactTest.delete();
+    await ContactTest.deleteAll();
     await UserTest.delete();
   });
 
@@ -73,5 +73,56 @@ describe("POST /api/contacts", () => {
     expect(body.data.last_name).toBe("Test");
     expect(body.data.email).toBe("test@gmail.com");
     expect(body.data.phone).toBe("1234567890");
+  });
+});
+
+describe("GET /api/contacts/:id", () => {
+  beforeEach(async () => {
+    await ContactTest.deleteAll();
+    await UserTest.create();
+    await ContactTest.create();
+  });
+
+  afterEach(async () => {
+    await ContactTest.deleteAll();
+    await UserTest.delete();
+  });
+
+  it("should get 404 if contact not found", async () => {
+    const contact = await ContactTest.get();
+
+    const response = await app.request("/api/contacts/" + (contact.id + 1), {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(404);
+
+    const body = await response.json();
+    expect(body.errors).toBeDefined();
+  });
+
+  it("should get contact, if contact exists", async () => {
+    const contact = await ContactTest.get();
+
+    const response = await app.request("/api/contacts/" + contact.id, {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body.data).toBeDefined();
+
+    expect(body.data.id).toBe(contact.id);
+    expect(body.data.first_name).toBe(contact.first_name);
+    expect(body.data.last_name).toBe(contact.last_name);
+    expect(body.data.email).toBe(contact.email);
+    expect(body.data.phone).toBe(contact.phone);
   });
 });
