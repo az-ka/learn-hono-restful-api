@@ -19,4 +19,12 @@ export class ContactValidation {
   });
 
   static readonly DELETE: ZodType = z.number().positive();
+
+  static readonly SEARCH: ZodType = z.object({
+    name: z.string().min(1).max(100).optional(),
+    phone: z.string().min(10).max(20).optional(),
+    email: z.string().min(1).max(100).email().optional(),
+    page: z.number().positive().optional(),
+    size: z.number().positive().optional(),
+  });
 }

@@ -1,6 +1,7 @@
 import { Contact, User } from "@prisma/client";
 import {
   ContactResponse,
+  ContactSearchRequest,
   CreateContactRequest,
   toContactResponse,
   UpdateContactRequest,
@@ -8,6 +9,7 @@ import {
 import { ContactValidation } from "../validation/contact-validation";
 import { prismaClient } from "../application/database";
 import { HTTPException } from "hono/http-exception";
+import { Pageable } from "../model/page-model";
 
 export class ContactService {
   static async create(
@@ -88,5 +90,74 @@ export class ContactService {
     });
 
     return true;
+  }
+
+  static async search(
+    user: User,
+    request: ContactSearchRequest,
+  ): Promise<Pageable<ContactResponse>> {
+    request = ContactValidation.SEARCH.parse(request);
+
+    const filter = [];
+
+    if (request.name) {
+      filter.push({
+        OR: [
+          {
+            first_name: {
+              contains: request.name,
+            },
+          },
+          {
+            last_name: {
+              contains: request.name,
+            },
+          },
+        ],
+      });
+    }
+
+    if (request.phone) {
+      filter.push({
+        phone: {
+          contains: request.phone,
+        },
+      });
+    }
+
+    if (request.email) {
+      filter.push({
+        email: {
+          contains: request.email,
+        },
+      });
+    }
+
+    const skip = ((request.page ?? 1) - 1) * (request.size ?? 10);
+
+    const contacs = await prismaClient.contact.findMany({
+      where: {
+        username: user.username,
+        AND: filter,
+      },
+      take: request.size,
+      skip: skip,
+    });
+
+    const total = await prismaClient.contact.count({
+      where: {
+        username: user.username,
+        AND: filter,
+      },
+    });
+
+    return {
+      data: contacs.map((contacs) => toContactResponse(contacs)),
+      paging: {
+        current_page: request.page ?? 1,
+        total_page: Math.ceil(total / (request.size ?? 10)),
+        size: request.size ?? 10,
+      },
+    };
   }
 }

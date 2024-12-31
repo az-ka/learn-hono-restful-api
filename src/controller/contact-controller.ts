@@ -3,6 +3,7 @@ import { ApplicationVariables } from "../model/app-model";
 import { authMiddleware } from "../middleware/auth-middleware";
 import { User } from "@prisma/client";
 import {
+  ContactSearchRequest,
   CreateContactRequest,
   UpdateContactRequest,
 } from "../model/contact-model";
@@ -59,4 +60,20 @@ contactController.delete("api/contacts/:id", async (c) => {
   return c.json({
     data: response,
   });
+});
+
+contactController.get("api/contacts", async (c) => {
+  const user = c.get("user") as User;
+
+  const request: ContactSearchRequest = {
+    name: c.req.query("name"),
+    phone: c.req.query("phone"),
+    email: c.req.query("email"),
+    page: c.req.query("page") ? Number(c.req.query("page")) : 1,
+    size: c.req.query("size") ? Number(c.req.query("size")) : 10,
+  };
+
+  const response = await ContactService.search(user, request);
+
+  return c.json(response);
 });

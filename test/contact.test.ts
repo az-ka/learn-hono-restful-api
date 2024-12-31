@@ -250,3 +250,164 @@ describe("DELETE /api/contacts/:id", async () => {
     expect(body.data).toBe(true);
   });
 });
+
+describe("GET /api/contacts", async () => {
+  beforeEach(async () => {
+    await ContactTest.deleteAll();
+    await UserTest.create();
+    await ContactTest.createMany(25);
+  });
+
+  afterEach(async () => {
+    await ContactTest.deleteAll();
+    await UserTest.delete();
+  });
+
+  it("should be able to search contacts", async () => {
+    const response = await app.request("/api/contacts", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body.data.length).toBe(10);
+    expect(body.paging.current_page).toBe(1);
+    expect(body.paging.total_page).toBe(3);
+    expect(body.paging.size).toBe(10);
+  });
+
+  it("should be able to search using name", async () => {
+    let response = await app.request("/api/contacts?name=Wulan", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    let body = await response.json();
+    expect(body.data.length).toBe(10);
+    expect(body.paging.current_page).toBe(1);
+    expect(body.paging.total_page).toBe(3);
+    expect(body.paging.size).toBe(10);
+
+    response = await app.request("/api/contacts?name=lice", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    body = await response.json();
+    expect(body.data.length).toBe(10);
+    expect(body.paging.current_page).toBe(1);
+    expect(body.paging.total_page).toBe(3);
+    expect(body.paging.size).toBe(10);
+  });
+
+  it("should be able to search using phone", async () => {
+    const response = await app.request("/api/contacts?phone=1234567890", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body.data.length).toBe(10);
+    expect(body.paging.current_page).toBe(1);
+    expect(body.paging.total_page).toBe(3);
+    expect(body.paging.size).toBe(10);
+  });
+
+  it("should be able to search using email", async () => {
+    const response = await app.request("/api/contacts?email=test@gmail.com", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body.data.length).toBe(10);
+    expect(body.paging.current_page).toBe(1);
+    expect(body.paging.total_page).toBe(3);
+    expect(body.paging.size).toBe(10);
+  });
+
+  it("should be able to search without result", async () => {
+    let response = await app.request("/api/contacts?name=Azka", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    let body = await response.json();
+    expect(body.data.length).toBe(0);
+    expect(body.paging.current_page).toBe(1);
+    expect(body.paging.total_page).toBe(0);
+    expect(body.paging.size).toBe(10);
+
+    response = await app.request("/api/contacts?phone=0987654321", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    body = await response.json();
+    expect(body.data.length).toBe(0);
+    expect(body.paging.current_page).toBe(1);
+    expect(body.paging.total_page).toBe(0);
+    expect(body.paging.size).toBe(10);
+
+    response = await app.request("/api/contacts?email=azka@gmail.com", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    body = await response.json();
+    expect(body.data.length).toBe(0);
+    expect(body.paging.current_page).toBe(1);
+    expect(body.paging.total_page).toBe(0);
+    expect(body.paging.size).toBe(10);
+  });
+
+  it("should be able to search with pagination", async () => {
+    let response = await app.request("/api/contacts?page=2&size=5", {
+      method: "GET",
+      headers: {
+        Authorization: "test",
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    let body = await response.json();
+
+    expect(body.data.length).toBe(5);
+    expect(body.paging.current_page).toBe(2);
+    expect(body.paging.total_page).toBe(5);
+    expect(body.paging.size).toBe(5);
+  });
+});
