@@ -60,3 +60,41 @@ export class ContactTest {
     });
   }
 }
+
+export class DatabaseTest {
+  static async cleanUp() {
+    // Delete addresses first due to foreign key constraints
+    await prismaClient.address.deleteMany({
+      where: {
+        contact: {
+          username: "testuser",
+        },
+      },
+    });
+
+    // Delete contacts next
+    await prismaClient.contact.deleteMany({
+      where: {
+        username: "testuser",
+      },
+    });
+
+    // Delete users last
+    await prismaClient.user.deleteMany({
+      where: {
+        username: "testuser",
+      },
+    });
+  }
+
+  static async cleanUpAll() {
+    // Delete all addresses
+    await prismaClient.address.deleteMany();
+
+    // Delete all contacts
+    await prismaClient.contact.deleteMany();
+
+    // Delete all users
+    await prismaClient.user.deleteMany();
+  }
+}
