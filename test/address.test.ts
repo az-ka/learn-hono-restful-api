@@ -259,3 +259,59 @@ describe("PUT /api/contact/{contact_id}/addresses/{id}", () => {
     expect(body.data.country).toBe("Indonesia");
   });
 });
+
+describe("DELETE /api/contact/{contact_id}/addresses/{id}", () => {
+  beforeEach(async () => {
+    await DatabaseTest.cleanUpAll();
+    await ContactTest.deleteAll();
+    await UserTest.create();
+    await ContactTest.create();
+    await AddressTest.create();
+  });
+
+  afterEach(async () => {
+    await DatabaseTest.cleanUpAll();
+    await ContactTest.deleteAll();
+    await UserTest.delete();
+  });
+
+  it("should rejected if address not found", async () => {
+    const contact = await ContactTest.get();
+    const address = await AddressTest.get();
+
+    const response = await app.request(
+      "/api/contacts/" + contact.id + "/addresses/" + (address.id + 1),
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: "test",
+        },
+      },
+    );
+
+    expect(response.status).toBe(404);
+
+    const body = await response.json();
+    expect(body.errors).toBeDefined();
+  });
+
+  it("should success if address found", async () => {
+    const contact = await ContactTest.get();
+    const address = await AddressTest.get();
+
+    const response = await app.request(
+      "/api/contacts/" + contact.id + "/addresses/" + address.id,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: "test",
+        },
+      },
+    );
+
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body.message).toBeDefined();
+  });
+});

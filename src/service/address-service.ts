@@ -79,4 +79,23 @@ export class AddressService {
 
     return toAddressResponse(address);
   }
+
+  static async remove(
+    user: User,
+    request: GetAddressRequest,
+  ): Promise<boolean> {
+    request = AddressValidation.REMOVE.parse(request);
+
+    await ContactService.contactMustExist(user, request.contact_id);
+
+    const address = await this.addressMustExist(request.contact_id, request.id);
+
+    await prismaClient.address.delete({
+      where: {
+        id: address.id,
+      },
+    });
+
+    return true;
+  }
 }
