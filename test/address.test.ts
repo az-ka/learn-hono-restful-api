@@ -1,5 +1,5 @@
 import { expect, describe, it, beforeEach, afterEach } from "bun:test";
-import { ContactTest, DatabaseTest, UserTest } from "./test-util";
+import { AddressTest, ContactTest, DatabaseTest, UserTest } from "./test-util";
 import app from "../src";
 
 describe("POST /api/contact/{contact_id}/addresses", () => {
@@ -94,5 +94,67 @@ describe("POST /api/contact/{contact_id}/addresses", () => {
     expect(body.data.street).toBe("Jl. Jendral Sudirman");
     expect(body.data.province).toBe("DKI Jakarta");
     expect(body.data.country).toBe("Indonesia");
+  });
+});
+
+describe("GET /api/contact/{contact_id}/addresses/{id}", () => {
+  beforeEach(async () => {
+    await DatabaseTest.cleanUpAll();
+    await ContactTest.deleteAll();
+    await UserTest.create();
+    await ContactTest.create();
+    await AddressTest.create();
+  });
+
+  afterEach(async () => {
+    await DatabaseTest.cleanUpAll();
+    await ContactTest.deleteAll();
+    await UserTest.delete();
+  });
+
+  it("should rejected if address not found", async () => {
+    const contact = await ContactTest.get();
+    const address = await AddressTest.get();
+
+    const response = await app.request(
+      "/api/contacts/" + contact.id + "/addresses/" + (address.id + 1),
+      {
+        method: "GET",
+        headers: {
+          Authorization: "test",
+        },
+      },
+    );
+
+    expect(response.status).toBe(404);
+
+    const body = await response.json();
+    expect(body.errors).toBeDefined();
+  });
+
+  it("should success if address found", async () => {
+    const contact = await ContactTest.get();
+    const address = await AddressTest.get();
+
+    const response = await app.request(
+      "/api/contacts/" + contact.id + "/addresses/" + address.id,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "test",
+        },
+      },
+    );
+
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body.data).toBeDefined();
+    expect(body.data.id).toBe(address.id);
+    expect(body.data.city).toBe(address.city);
+    expect(body.data.postal_code).toBe(address.postal_code);
+    expect(body.data.street).toBe(address.street);
+    expect(body.data.province).toBe(address.province);
+    expect(body.data.country).toBe(address.country);
   });
 });

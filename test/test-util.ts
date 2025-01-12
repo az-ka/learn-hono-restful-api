@@ -1,4 +1,4 @@
-import { Contact } from "@prisma/client";
+import { Address, Contact } from "@prisma/client";
 import { prismaClient } from "../src/application/database";
 
 export class UserTest {
@@ -56,6 +56,33 @@ export class ContactTest {
     return prismaClient.contact.findFirstOrThrow({
       where: {
         username: "testuser",
+      },
+    });
+  }
+}
+
+export class AddressTest {
+  static async create() {
+    const contact = await ContactTest.get();
+
+    await prismaClient.address.create({
+      data: {
+        contact_id: contact.id,
+        street: "1234 Test St",
+        city: "Test City",
+        province: "Test Province",
+        country: "Test Country",
+        postal_code: "12345",
+      },
+    });
+  }
+
+  static async get(): Promise<Address> {
+    return prismaClient.address.findFirstOrThrow({
+      where: {
+        contact: {
+          username: "testuser",
+        },
       },
     });
   }
