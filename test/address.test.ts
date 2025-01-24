@@ -315,3 +315,68 @@ describe("DELETE /api/contact/{contact_id}/addresses/{id}", () => {
     expect(body.message).toBeDefined();
   });
 });
+
+describe("List /api/contact/{contact_id}/addresses", () => {
+  beforeEach(async () => {
+    await DatabaseTest.cleanUpAll();
+    await ContactTest.deleteAll();
+    await UserTest.create();
+    await ContactTest.create();
+    await AddressTest.create();
+  });
+
+  afterEach(async () => {
+    await DatabaseTest.cleanUpAll();
+    await ContactTest.deleteAll();
+    await UserTest.delete();
+  });
+
+  it('should rejected if contact id is not found', async () => {
+    const contact = await ContactTest.get();
+    const response = await app.request('/api/contacts/' + (contact.id + 1) + '/addresses', {
+      method: 'GET',
+      headers: {
+        Authorization: 'test',
+      },
+    });
+
+    expect(response.status).toBe(404);
+
+    const body = await response.json();
+    expect(body.errors).toBeDefined();
+  });
+
+  it ('should success if contact id is found', async () => {
+    const contact = await ContactTest.get();
+    const response = await app.request('/api/contacts/' + contact.id + '/addresses', {
+      method: 'GET',
+      headers: {
+        Authorization: 'test',
+      },
+    });
+
+    expect(response.status).toBe(200);
+
+    const body = await response.json();
+    expect(body.data).toBeDefined();
+    
+    const addressData = body.data[0];
+    expect(addressData.id).toBeDefined();
+    expect(addressData.city).toBeDefined();
+    expect(addressData.postal_code).toBeDefined();
+    expect(addressData.street).toBeDefined();
+    expect(addressData.province).toBeDefined();
+    expect(addressData.country).toBeDefined();
+
+    const address = await AddressTest.get();
+
+    expect(addressData.id).toBe(address.id);
+    expect(addressData.city).toBe(address.city);
+    expect(addressData.postal_code).toBe(address.postal_code);
+    expect(addressData.street).toBe(address.street);
+    expect(addressData.province).toBe(address.province);
+    expect(addressData.country).toBe(address.country);
+
+  });
+
+});
