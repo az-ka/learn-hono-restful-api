@@ -114,6 +114,6 @@ export class AddressService {
       },
     });
 
-    return addresses.map(address => toAddressResponse(address));
+    return addresses.map((address) => toAddressResponse(address));
   }
 }

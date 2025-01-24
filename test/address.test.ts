@@ -331,14 +331,17 @@ describe("List /api/contact/{contact_id}/addresses", () => {
     await UserTest.delete();
   });
 
-  it('should rejected if contact id is not found', async () => {
+  it("should rejected if contact id is not found", async () => {
     const contact = await ContactTest.get();
-    const response = await app.request('/api/contacts/' + (contact.id + 1) + '/addresses', {
-      method: 'GET',
-      headers: {
-        Authorization: 'test',
+    const response = await app.request(
+      "/api/contacts/" + (contact.id + 1) + "/addresses",
+      {
+        method: "GET",
+        headers: {
+          Authorization: "test",
+        },
       },
-    });
+    );
 
     expect(response.status).toBe(404);
 
@@ -346,20 +349,23 @@ describe("List /api/contact/{contact_id}/addresses", () => {
     expect(body.errors).toBeDefined();
   });
 
-  it ('should success if contact id is found', async () => {
+  it("should success if contact id is found", async () => {
     const contact = await ContactTest.get();
-    const response = await app.request('/api/contacts/' + contact.id + '/addresses', {
-      method: 'GET',
-      headers: {
-        Authorization: 'test',
+    const response = await app.request(
+      "/api/contacts/" + contact.id + "/addresses",
+      {
+        method: "GET",
+        headers: {
+          Authorization: "test",
+        },
       },
-    });
+    );
 
     expect(response.status).toBe(200);
 
     const body = await response.json();
     expect(body.data).toBeDefined();
-    
+
     const addressData = body.data[0];
     expect(addressData.id).toBeDefined();
     expect(addressData.city).toBeDefined();
@@ -376,7 +382,5 @@ describe("List /api/contact/{contact_id}/addresses", () => {
     expect(addressData.street).toBe(address.street);
     expect(addressData.province).toBe(address.province);
     expect(addressData.country).toBe(address.country);
-
   });
-
 });

@@ -80,7 +80,6 @@ addressController.delete(
   },
 );
 
-
 addressController.get("api/contacts/:contact_id/addresses", async (c) => {
   const user = c.get("user") as User;
 
@@ -93,4 +92,4 @@ addressController.get("api/contacts/:contact_id/addresses", async (c) => {
   return c.json({
     data: response,
   });
-}); 
+});
